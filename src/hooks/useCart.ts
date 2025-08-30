@@ -11,7 +11,7 @@ interface CartItem {
 }
 
 interface Product {
-  id: string;
+  id: string | number;
   name: string;
   price: number;
   description: string;
@@ -23,8 +23,9 @@ export const useCart = () => {
   const { toast } = useToast();
 
   const addToCart = useCallback((product: Product) => {
+    const productId = product.id.toString();
     setCartItems(prev => {
-      const existingItem = prev.find(item => item.id === product.id);
+      const existingItem = prev.find(item => item.id === productId);
       
       if (existingItem) {
         toast({
@@ -32,7 +33,7 @@ export const useCart = () => {
           description: `${product.name} quantity increased`,
         });
         return prev.map(item =>
-          item.id === product.id
+          item.id === productId
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -41,7 +42,7 @@ export const useCart = () => {
           title: "Added to cart",
           description: `${product.name} added to your cart`,
         });
-        return [...prev, { ...product, quantity: 1 }];
+        return [...prev, { ...product, id: productId, quantity: 1 }];
       }
     });
   }, [toast]);
